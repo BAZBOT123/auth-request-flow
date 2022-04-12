@@ -23,7 +23,7 @@ router.post('/login', (req, res) => {
     res.json({ token })
 
   } else {
-    res.status(400)
+    res.status(401)
     res.json({ error: 'invalid credentials' })
   }
 });
@@ -32,13 +32,17 @@ router.post('/login', (req, res) => {
 //token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImF1dGhndXkiLCJpYXQiOjE2NDk2OTQxNDB9.hIcQd6FEcdU1ySOFSsGv2HxXKaWPkVy2Rflh1rZkDgE
 
 router.get('/profile', (req, res) => {
-  const result = verifyToken(req.headers.token, secretKey)
+  const result = verifyToken(req.headers.authorization, secretKey)
   console.log(req.headers)
 
-  res.json({ result })
-  console.log("yo", result)
+  if (result) {
+    res.json({ user: mockUser.profile })
+    console.log("yo", result)
+  } else {
+    res.status(401)
+    res.json({ error: 'Invalid token' })
+  }
 });
-
 
 function verifyToken(token, secretKey) {
   try {
